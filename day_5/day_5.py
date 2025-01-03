@@ -27,6 +27,7 @@ def main():
     # print(page_updates)
     # print(rules)
     p1()
+    p2()
 
 
 def get_middle_page_number(page_update: list[int]) -> int:
@@ -62,11 +63,37 @@ def p1():
         for i in range(len(update)):
             if not i == len(update) - 1:
                 if not is_page_pair_order_valid(update[i], update[i+1], rules):
-                    print(f"Invalid page pair order: {update[i]} {update[i+1]}")
+                    # print(f"Invalid page pair order: {update[i]} {update[i+1]}")
                     valid = False
                     break
         if valid:
             valid_middle_page_numbers.append(get_middle_page_number(update))
+    print(sum(valid_middle_page_numbers))
+
+def change_page_order(page_update: list[int], rules:list[Rule]) -> list[int]:
+    for i in range(len(page_update)):
+        if not i == len(page_update) - 1:
+            if not is_page_pair_order_valid(page_update[i], page_update[i+1], rules):
+                page_update[i], page_update[i+1] = page_update[i+1], page_update[i]
+                page_update = change_page_order(page_update, rules)
+    return page_update
+
+def p2():
+    puzzle_input = parse_puzzle_input("day_5/puzzle_input.txt")
+    rules = parse_puzzle_rules(puzzle_input)
+    page_updates = parse_puzzle_page_updates(puzzle_input)
+    invalid_page_updates:list[list[int]] = []
+    valid_middle_page_numbers: list[int] = []
+    print("Day 5 Part 2:")
+    for update in page_updates:
+        for i in range(len(update)):
+            if not i == len(update) - 1:
+                if not is_page_pair_order_valid(update[i], update[i+1], rules):
+                    # print(f"Invalid page pair order: {update[i]} {update[i+1]}")
+                    invalid_page_updates.append(update)
+                    break
+    for update in invalid_page_updates:
+        valid_middle_page_numbers.append(get_middle_page_number(change_page_order(update, rules)))
     print(sum(valid_middle_page_numbers))
 
 
